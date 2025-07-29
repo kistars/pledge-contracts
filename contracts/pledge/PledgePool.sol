@@ -211,78 +211,34 @@ contract PledgePool is ReentrancyGuard, SafeTransfer, multiSignatureClient {
         // 需要_spToken不是零地址
         require(_spToken != address(0), "createPool:is zero address");
 
-        // 创建基础池信息结构体
-        PoolBaseInfo memory newPool = _createPoolBaseInfo(
-            _settleTime,
-            _endTime,
-            _interestRate,
-            _maxSupply,
-            _martgageRate,
-            _lendToken,
-            _borrowToken,
-            _spToken,
-            _jpToken,
-            _autoLiquidateThreshold
-        );
-
         // 推入基础池信息
-        poolBaseInfo.push(newPool);
-
-        PoolDataInfo memory newPoolData = _createPoolDataInfo(0, 0, 0, 0, 0, 0);
+        poolBaseInfo.push(
+            PoolBaseInfo({
+                settleTime: _settleTime,
+                endTime: _endTime,
+                interestRate: _interestRate,
+                maxSupply: _maxSupply,
+                lendSupply: 0,
+                borrowSupply: 0,
+                martgageRate: _martgageRate,
+                lendToken: _lendToken,
+                borrowToken: _borrowToken,
+                state: defaultChoice,
+                spCoin: IDebtToken(_spToken),
+                jpCoin: IDebtToken(_jpToken),
+                autoLiquidateThreshold: _autoLiquidateThreshold
+            })
+        );
         // 推入池数据信息
-        poolDataInfo.push(newPoolData);
-    }
-
-    /**
-     * @dev 创建池基础信息的内部函数，用于避免栈深度超限
-     */
-    function _createPoolBaseInfo(
-        uint256 _settleTime,
-        uint256 _endTime,
-        uint64 _interestRate,
-        uint256 _maxSupply,
-        uint256 _martgageRate,
-        address _lendToken,
-        address _borrowToken,
-        address _spToken,
-        address _jpToken,
-        uint256 _autoLiquidateThreshold
-    ) internal pure returns (PoolBaseInfo memory) {
-        return PoolBaseInfo({
-            settleTime: _settleTime,
-            endTime: _endTime,
-            interestRate: _interestRate,
-            maxSupply: _maxSupply,
-            lendSupply: 0,
-            borrowSupply: 0,
-            martgageRate: _martgageRate,
-            lendToken: _lendToken,
-            borrowToken: _borrowToken,
-            state: defaultChoice,
-            spCoin: IDebtToken(_spToken),
-            jpCoin: IDebtToken(_jpToken),
-            autoLiquidateThreshold: _autoLiquidateThreshold
-        });
-    }
-
-    /**
-     * @dev 创建池数据信息的内部函数，用于避免栈深度超限
-     */
-    function _createPoolDataInfo(
-        uint256 _settleAmountLend,
-        uint256 _settleAmountBorrow,
-        uint256 _finishAmountLend,
-        uint256 _finishAmountBorrow,
-        uint256 _liquidationAmounLend,
-        uint256 _liquidationAmounBorrow
-    ) internal pure returns (PoolDataInfo memory) {
-        return PoolDataInfo({
-            settleAmountLend: _settleAmountLend,
-            settleAmountBorrow: _settleAmountBorrow,
-            finishAmountLend: _finishAmountLend,
-            finishAmountBorrow: _finishAmountBorrow,
-            liquidationAmounLend: _liquidationAmounLend,
-            liquidationAmounBorrow: _liquidationAmounBorrow
-        });
+        poolDataInfo.push(
+            PoolDataInfo({
+                settleAmountLend: 0,
+                settleAmountBorrow: 0,
+                finishAmountLend: 0,
+                finishAmountBorrow: 0,
+                liquidationAmounLend: 0,
+                liquidationAmounBorrow: 0
+            })
+        );
     }
 }
