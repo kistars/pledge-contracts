@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "./SafeErc20.sol";
+import "./SafeERC20.sol";
 
 contract SafeTransfer {
     using SafeERC20 for IERC20;

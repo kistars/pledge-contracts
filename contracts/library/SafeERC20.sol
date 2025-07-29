@@ -40,19 +40,19 @@ library SafeERC20 {
         // 'safeIncreaseAllowance' and 'safeDecreaseAllowance'
         // solhint-disable-next-line max-line-length
         require(
-            (value == 0) || (token.allowance(address(this), spender) == 0),
+            (value == 0) || (token.allowance(address(this), uint256(uint160(spender))) == 0),
             "SafeERC20: approve from non-zero to non-zero allowance"
         );
         _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, value));
     }
 
     function safeIncreaseAllowance(IERC20 token, address spender, uint256 value) internal {
-        uint256 newAllowance = token.allowance(address(this), spender).add(value);
+        uint256 newAllowance = token.allowance(address(this), uint256(uint160(spender))).add(value);
         _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
     }
 
     function safeDecreaseAllowance(IERC20 token, address spender, uint256 value) internal {
-        uint256 newAllowance = token.allowance(address(this), spender).sub(value);
+        uint256 newAllowance = token.allowance(address(this), uint256(uint160(spender))).sub(value);
         _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
     }
 
