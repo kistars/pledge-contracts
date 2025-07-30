@@ -1,24 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../multiSignature/multiSignatureClient.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 // 一个高效管理可铸币地址的集合
-contract AddressPrivileges is multiSignatureClient {
-    constructor(address _multiSignature) multiSignatureClient(_multiSignature) {}
+contract AddressPrivileges is Ownable {
+    constructor(address _owner) Ownable(_owner) {}
 
     using EnumerableSet for EnumerableSet.AddressSet;
 
     EnumerableSet.AddressSet private _minters;
 
     //
-    function addMinter(address _addMinter) public validCall returns (bool) {
+    function addMinter(address _addMinter) public onlyOwner returns (bool) {
         require(_addMinter != address(0), "Token: _addMinter is the zero address");
         return EnumerableSet.add(_minters, _addMinter);
     }
 
-    function delMinter(address _delMinter) public validCall returns (bool) {
+    function delMinter(address _delMinter) public onlyOwner returns (bool) {
         require(_delMinter != address(0), "Token: _delMinter is the zero address");
         return EnumerableSet.remove(_minters, _delMinter);
     }

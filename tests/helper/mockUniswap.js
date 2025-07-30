@@ -3,22 +3,24 @@ const { ethers } = require("hardhat");
 
 async function mockUniswap(minter, weth) {
     const UniswapV2Factory = await ethers.getContractFactory("UniswapV2Factory");
-    let uniswapFactory = await UniswapV2Factory.deploy(minter.address);
+    const uniswapFactory = await UniswapV2Factory.deploy(minter.address);
+    await uniswapFactory.waitForDeployment();
 
     const UniswapV2Router02 = await ethers.getContractFactory("UniswapV2Router02");
-    let uniswapRouter = await UniswapV2Router02.deploy(uniswapFactory.address, weth.address);
+    const uniswapRouter = await UniswapV2Router02.deploy(uniswapFactory.target, weth.target);
+    await uniswapFactory.waitForDeployment();
     return [uniswapRouter, uniswapFactory]
 
 }
 // targetToken: {address: string, price: int}
 async function mockAddLiquidity(router, token0, token1, minter, deadline, amount0, amount1) {
     // approve
-    await token0.connect(minter).approve(router.address, BigInt(amount0));
-    await token1.connect(minter).approve(router.address, BigInt(amount1));
+    await token0.connect(minter).approve(router.target, BigInt(amount0));
+    await token1.connect(minter).approve(router.target, BigInt(amount1));
     // add
     await router.connect(minter).addLiquidity(
-        token0.address,
-        token1.address,
+        token0.target,
+        token1.target,
         BigInt(amount0),
         BigInt(amount1),
         BigInt(0),
@@ -30,7 +32,7 @@ async function mockAddLiquidity(router, token0, token1, minter, deadline, amount
 
 async function mockSwap(router, token0, swapAmount, minAmount, path, minter, deadline) {
     // approve
-    await token0.connect(minter).approve(router.address, BigInt(swapAmount));
+    await token0.connect(minter).approve(router.target, BigInt(swapAmount));
     // swap
     await router.connect(minter).swapExactTokensForTokens(
         BigInt(swapAmount),

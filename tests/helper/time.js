@@ -3,21 +3,35 @@ const { ethers } = require("hardhat");
 
 async function latestBlock() {
   const block = await ethers.provider.getBlock('latest');
-  return ethers.BigNumber.from(block.number);
+  if (!block || block.number === undefined) {
+    throw new Error("Cannot get latest block information");
+  }
+  return ethers.parseUnits(block.number.toString(), 0);
 }
 
 async function latestBlockNum() {
   const block = await ethers.provider.getBlock('latest');
+  if (!block || block.number === undefined) {
+    throw new Error("Cannot get latest block number");
+  }
   return block.number;
 }
 
 async function showBlock() {
   const block = await ethers.provider.getBlock('latest');
+  if (!block || block.number === undefined) {
+    console.log("Block number: unknown");
+    return;
+  }
   console.log("Block number: " + block.number.toString());
 }
 
 async function showBlock(msg) {
   const block = await ethers.provider.getBlock('latest');
+  if (!block || block.number === undefined) {
+    console.log(msg + " at block number: unknown");
+    return;
+  }
   console.log(msg + " at block number: " + block.number.toString());
 }
 
@@ -36,15 +50,15 @@ function advanceBlock() {
 async function advanceBlockTo(target) {
   // stop interval mint,set to 600s
   await stopAutoMine()
-  if (!ethers.BigNumber.isBigNumber(target)) {
-    target = ethers.BigNumber.from(target);
+  if (typeof target !== 'bigint') {
+    target = ethers.parseUnits(target.toString(), 0);
   }
 
   const currentBlock = await latestBlock();
   const start = Date.now();
   let notified;
-  if (target.lt(currentBlock)) throw Error(`Target block #(${target}) is lower than current block #(${currentBlock})`);
-  while ((await latestBlock()).lt(target)) {
+  if (target < currentBlock) throw Error(`Target block #(${target}) is lower than current block #(${currentBlock})`);
+  while ((await latestBlock()) < target) {
     if (!notified && Date.now() - start >= 5000) {
       notified = true;
       console.log(`\
@@ -59,7 +73,11 @@ async function advanceBlockTo(target) {
 // Returns the time of the last mined block in seconds
 async function latest() {
   const block = await ethers.provider.getBlock('latest');
-  return ethers.BigNumber.from(block.timestamp);
+  if (!block || block.timestamp === undefined) {
+    // 如果区块信息不完整，返回当前时间
+    return ethers.parseUnits(Math.floor(Date.now() / 1000).toString(), 0);
+  }
+  return ethers.parseUnits(block.timestamp.toString(), 0);
 }
 
 async function increase(seconds) {

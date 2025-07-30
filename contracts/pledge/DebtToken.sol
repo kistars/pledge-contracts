@@ -5,10 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./AddressPrivileges.sol";
 
 contract DebtToken is ERC20, AddressPrivileges {
-    constructor(string memory _name, string memory _symbol, address _multiSignature)
-        ERC20(_name, _symbol)
-        AddressPrivileges(_multiSignature)
-    {}
+    constructor(string memory _name, string memory _symbol) ERC20(_name, _symbol) AddressPrivileges(msg.sender) {}
 
     function mint(address _to, uint256 _amount) public onlyMinter returns (bool) {
         _mint(_to, _amount);
