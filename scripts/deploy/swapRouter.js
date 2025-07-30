@@ -49,11 +49,12 @@ async function main() {
     const WETH9 = await ethers.getContractFactory("WETH9");
     const weth = await WETH9.deploy();
     await weth.waitForDeployment();
+    console.log("WETH9 address =", weth.target);
+
     const [router, factory] = await mockUniswap(deployerMin, weth);
 
     console.log("router", router.target);
     console.log("factory", factory.target);
-
 }
 
 main();
