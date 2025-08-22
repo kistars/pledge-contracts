@@ -8,6 +8,10 @@ import "../interface/IBscPledgeOracle.sol";
 import "../interface/IUniswapV2Router02.sol";
 import "../multiSignature/multiSignatureClient.sol";
 
+/**
+ * @dev 借贷池合约
+ * tod后续可以使用GnosisSafe合约进行多签操作
+ */
 contract PledgePool is ReentrancyGuard, SafeTransfer, multiSignatureClient {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
